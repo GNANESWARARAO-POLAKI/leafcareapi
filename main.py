@@ -134,6 +134,3 @@ def predict_disease(image_path):
     except Exception as e:
         print(f"❌ Error in Disease Prediction: {e}")
         return None, None
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8010)
