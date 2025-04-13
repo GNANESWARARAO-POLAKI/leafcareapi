@@ -8,7 +8,7 @@ import tensorflow as tf
 from fastapi import FastAPI, File, UploadFile, HTTPException
 # from io import BytesIO
 from PIL import Image
-from ultralyticsplus import YOLO, render_result
+# from ultralyticsplus import YOLO, render_result
 import uvicorn
 
 # Initialize FastAPI
@@ -29,11 +29,11 @@ target_size = (input_shape[1], input_shape[2])  # e.g., (224, 224)
 
 
 # ✅ Load YOLO Model (for leaf detection)
-leaf_model = YOLO("foduucom/plant-leaf-detection-and-classification")
-leaf_model.overrides['conf'] = 0.40  # Confidence threshold
-leaf_model.overrides['iou'] = 0.90   # IoU threshold
-leaf_model.overrides['agnostic_nms'] = True  # Class-agnostic NMS
-leaf_model.overrides['max_det'] = 1000  # Max detections per image
+# leaf_model = YOLO("foduucom/plant-leaf-detection-and-classification")
+# leaf_model.overrides['conf'] = 0.40  # Confidence threshold
+# leaf_model.overrides['iou'] = 0.90   # IoU threshold
+# leaf_model.overrides['agnostic_nms'] = True  # Class-agnostic NMS
+# leaf_model.overrides['max_det'] = 1000  # Max detections per image
 
 # ✅ Load CNN Model (for disease classification)
 # cnn_model = tf.keras.models.load_model("model/rained_plant_disease_model.keras" )
@@ -75,16 +75,16 @@ async def detect_leaf_disease(file: UploadFile = File(...)):
             temp_image_path = temp_image.name  # Get temp file path
 
         print(f"✅ Image saved at: {temp_image_path}")
-        image = Image.open(temp_image_path).convert("RGB")
+        # image = Image.open(temp_image_path).convert("RGB")
 
-        leaf_results = leaf_model.predict(temp_image_path, verbose=False)
-        filtered_boxes = [leaf_model.names[int(box.cls)] for box in leaf_results[0].boxes if (box.conf > 0.2 and leaf_model.names[int(box.cls)] in plants)]
-        print(filtered_boxes)
-        leaf_detected = len(filtered_boxes)>0
+        # leaf_results = leaf_model.predict(temp_image_path, verbose=False)
+        # filtered_boxes = [leaf_model.names[int(box.cls)] for box in leaf_results[0].boxes if (box.conf > 0.2 and leaf_model.names[int(box.cls)] in plants)]
+        # print(filtered_boxes)
+        leaf_detected = 1
 
-        if leaf_detected:
-            render = render_result(model=leaf_model, image=image, result=leaf_results[0])
-            render_path = temp_image_path.replace(".jpg", "_detected.jpg")
+        # if leaf_detected:
+        #     render = render_result(model=leaf_model, image=image, result=leaf_results[0])
+        #     render_path = temp_image_path.replace(".jpg", "_detected.jpg")
             # render.show()
             # print(f"✅ Detection image saved at: {render_path}")
 
@@ -99,7 +99,7 @@ async def detect_leaf_disease(file: UploadFile = File(...)):
 
 
         # Step 5: Classify Disease Using CNN Model
-        disease_name, confidence = predict_disease(temp_image_path,filtered_boxes)
+        disease_name, confidence = predict_disease(temp_image_path)
 
         # Cleanup temp image
         os.remove(temp_image_path)
@@ -119,7 +119,7 @@ async def detect_leaf_disease(file: UploadFile = File(...)):
             "disease_detected": True,
             "disease_name": disease_name,
             "confidence": f"{confidence}",
-            "detection_image_path": render_path  # Path to the saved detected image
+            "detection_image_path": 'null', # Path to the saved detected image
         }
 
     except Exception as e:
@@ -129,7 +129,7 @@ async def detect_leaf_disease(file: UploadFile = File(...)):
 from PIL import Image
 import numpy as np
 
-def predict_disease(image_path, filtered_boxes):
+def predict_disease(image_path):
     """Predicts the plant disease using the TFLite model, without tf.keras preprocessing."""
     try:
         # ✅ Load and preprocess image using PIL
@@ -157,6 +157,4 @@ def predict_disease(image_path, filtered_boxes):
         print(f"❌ Error in TFLite Prediction: {e}")
         return None, None
 
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8010)
+print('executed')
