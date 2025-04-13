@@ -157,5 +157,5 @@ def predict_disease(image_path, filtered_boxes):
         return None, None
 
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8010)
+# if __name__ == "__main__":
+#     uvicorn.run(app, host="0.0.0.0", port=8010)
