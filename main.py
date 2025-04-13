@@ -3,7 +3,8 @@ import os
 # os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import tempfile
 import numpy as np
-from tflite_runtime.interpreter import Interpreter 
+import tensorflow as tf
+# from tflite_runtime.interpreter import Interpreter 
 from fastapi import FastAPI, File, UploadFile, HTTPException
 # from io import BytesIO
 from PIL import Image
@@ -15,7 +16,7 @@ app = FastAPI()
 
 
 # ✅ Load TFLite model
-interpreter = Interpreter(model_path="./model/model.tflite")
+interpreter = tf.lite.Interpreter(model_path="./model/model.tflite")
 interpreter.allocate_tensors()
 
 # ✅ Get input/output details
@@ -157,5 +158,5 @@ def predict_disease(image_path, filtered_boxes):
         return None, None
 
 
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8010)
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8010)
