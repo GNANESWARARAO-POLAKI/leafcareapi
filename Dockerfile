@@ -4,9 +4,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN apt-get update && apt-get install -y libatlas-base-dev
-
-RUN pip install --no-cache-dir tflite-runtime==2.12.0
+RUN apt-get update && apt-get install -y \
+    libopenblas-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN pip install -r requirements.txt
 
